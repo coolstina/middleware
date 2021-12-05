@@ -29,11 +29,19 @@ func (of optionFunc) apply(ops *options) {
 
 type options struct {
 	client *redis.Client
+	header string
 }
 
 // WithWatcherOfRedisClient Specify redisclient config when watcher is redisclient.
 func WithWatcherOfRedisClient(client *redis.Client) Option {
 	return optionFunc(func(ops *options) {
 		ops.client = client
+	})
+}
+
+// WithRedirectMessageHeader Specify redirect message HTTP response header.
+func WithRedirectMessageHeader(header string) Option {
+	return optionFunc(func(ops *options) {
+		ops.header = header
 	})
 }

@@ -20,8 +20,9 @@ import (
 
 // TriggerEvent trigger redirection event.
 type TriggerEvent struct {
-	StatusCode  int    // Http status code.
-	RedirectURI string // redirect uri.
+	StatusCode            int    // Http status code.
+	RedirectURI           string // redirect uri.
+	RedirectHeaderMessage string // Redirect header message,
 }
 
 // EmitTriggerEvent is a mapping configuration used to trigger eventsWithFile.
@@ -58,6 +59,9 @@ func (emit EmitTriggerEvent) redirects() map[string]string {
 }
 
 func (emit EmitTriggerEvent) URIIsRedirect(uri string) bool {
+	access.Lock()
+	defer access.Unlock()
+
 	redirects := emit.redirects()
 	if _, exists := redirects[uri]; exists {
 		return false

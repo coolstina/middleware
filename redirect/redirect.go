@@ -15,11 +15,14 @@
 package redirect
 
 import (
-	"fmt"
-
 	"github.com/coolstina/fsfire"
 	"github.com/gin-gonic/gin"
 	"github.com/go-redis/redis"
+)
+
+// DefaultRedirectMessageHeader Default HTTP response header constant definition for redirect message.
+const (
+	DefaultRedirectMessageHeader = "X-Redirect-Message"
 )
 
 type Redirecter interface {
@@ -35,9 +38,12 @@ type Redirect struct {
 
 func NewRedirect(emits EmitTriggerEvent, watcher Watcher, ops ...Option) *Redirect {
 	options := &options{}
-
 	for _, o := range ops {
 		o.apply(options)
+	}
+
+	if options.header == "" {
+		options.header = DefaultRedirectMessageHeader
 	}
 
 	if watcher == WatcherOfRedis && options.client == nil {
@@ -50,13 +56,12 @@ func NewRedirect(emits EmitTriggerEvent, watcher Watcher, ops ...Option) *Redire
 func (redirect *Redirect) Handler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		uri := ctx.Request.RequestURI
-		fmt.Println("uri: ", uri)
 		if redirect.emits.URIIsRedirect(uri) {
-			fmt.Printf("middleware execute\n")
 			switch redirect.watcher {
 			case WatcherOfFile:
 				for monitor, event := range redirect.emits {
 					if !fsfire.IsNotExists(monitor) {
+						ctx.Writer.Header().Set(redirect.options.header, event.RedirectHeaderMessage)
 						ctx.Redirect(event.StatusCode, event.RedirectURI)
 						ctx.Abort()
 					}
@@ -64,8 +69,8 @@ func (redirect *Redirect) Handler() gin.HandlerFunc {
 			case WatcherOfRedis:
 				for monitor, event := range redirect.emits {
 					exists, _ := redirect.client.Exists(monitor).Result()
-					fmt.Printf("exists: %+v\n", exists)
 					if exists == int64(1) {
+						ctx.Writer.Header().Set(redirect.options.header, event.RedirectHeaderMessage)
 						ctx.Redirect(event.StatusCode, event.RedirectURI)
 						ctx.Abort()
 					}

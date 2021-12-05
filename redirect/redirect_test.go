@@ -45,15 +45,17 @@ func (suite *RedirectSuite) BeforeTest(suiteName, testName string) {
 
 	suite.eventsWithFile = EmitTriggerEvent{
 		"/usr/local/data/fss/.keep.upgrading": &TriggerEvent{
-			StatusCode:  http.StatusServiceUnavailable,
-			RedirectURI: "/fss/upgrading",
+			StatusCode:            http.StatusServiceUnavailable,
+			RedirectURI:           "/fss/upgrading",
+			RedirectHeaderMessage: "FSS application upgrading...",
 		},
 	}
 
 	suite.eventsWithFile = EmitTriggerEvent{
 		".keep.upgrading": &TriggerEvent{
-			StatusCode:  http.StatusServiceUnavailable,
-			RedirectURI: "/fss/upgrading",
+			StatusCode:            http.StatusServiceUnavailable,
+			RedirectURI:           "/fss/upgrading",
+			RedirectHeaderMessage: "FSS application upgrading...",
 		},
 	}
 }
