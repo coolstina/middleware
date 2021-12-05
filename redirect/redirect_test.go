@@ -21,7 +21,6 @@ import (
 	redisc "github.com/coolstina/connecter/redis"
 	"github.com/coolstina/middleware/connector/redisclient"
 	"github.com/go-redis/redis"
-
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/suite"
 )
@@ -34,8 +33,8 @@ type RedirectSuite struct {
 	suite.Suite
 	err             error
 	client          *redis.Client
-	eventsWithFile  EmitTriggerEvent
-	eventsWithRedis EmitTriggerEvent
+	eventsWithFile  Emits
+	eventsWithRedis Emits
 }
 
 func (suite *RedirectSuite) BeforeTest(suiteName, testName string) {
@@ -43,7 +42,7 @@ func (suite *RedirectSuite) BeforeTest(suiteName, testName string) {
 	assert.NoError(suite.T(), suite.err)
 	assert.NotNil(suite.T(), suite.client)
 
-	suite.eventsWithFile = EmitTriggerEvent{
+	suite.eventsWithFile = Emits{
 		"/usr/local/data/fss/.keep.upgrading": &TriggerEvent{
 			StatusCode:            http.StatusServiceUnavailable,
 			RedirectURI:           "/fss/upgrading",
@@ -51,7 +50,7 @@ func (suite *RedirectSuite) BeforeTest(suiteName, testName string) {
 		},
 	}
 
-	suite.eventsWithFile = EmitTriggerEvent{
+	suite.eventsWithRedis = Emits{
 		".keep.upgrading": &TriggerEvent{
 			StatusCode:            http.StatusServiceUnavailable,
 			RedirectURI:           "/fss/upgrading",
