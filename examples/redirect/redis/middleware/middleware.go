@@ -25,9 +25,15 @@ import (
 func GetRedirectOr(client *redis.Client) *redirect.Redirect {
 	events := redirect.EmitTriggerEvent{
 		".keep.upgrading": &redirect.TriggerEvent{
-			StatusCode:  http.StatusFound,
-			RedirectURI: "/upgrading",
+			StatusCode:            http.StatusFound,
+			RedirectURI:           "/upgrading",
+			RedirectHeaderMessage: "FSS application upgrading...",
 		},
 	}
-	return redirect.NewRedirect(events, redirect.WatcherOfRedis, redirect.WithWatcherOfRedisClient(client))
+	return redirect.NewRedirect(
+		events,
+		redirect.WatcherOfRedis,
+		redirect.WithWatcherOfRedisClient(client),
+		redirect.WithRedirectMessageHeader("X-Redirect-Custom-Message"),
+	)
 }
