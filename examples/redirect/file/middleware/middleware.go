@@ -21,12 +21,12 @@ import (
 )
 
 func GetRedirectOr() *redirect.Redirect {
-	events := redirect.EmitTriggerEvent{
+	emits := redirect.Emits{
 		"/usr/local/data/fss/.keep.upgrading": &redirect.TriggerEvent{
 			StatusCode:            http.StatusFound,
 			RedirectURI:           "/upgrading",
 			RedirectHeaderMessage: "FSS application upgrading...",
 		},
 	}
-	return redirect.NewRedirect(events, redirect.WatcherOfFile)
+	return redirect.NewRedirect(emits, redirect.WatcherOfFile)
 }

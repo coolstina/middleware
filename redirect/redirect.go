@@ -30,13 +30,13 @@ type Redirecter interface {
 }
 
 type Redirect struct {
-	emits   EmitTriggerEvent
+	emits   Emits
 	watcher Watcher
 	options *options
 	client  *redis.Client
 }
 
-func NewRedirect(emits EmitTriggerEvent, watcher Watcher, ops ...Option) *Redirect {
+func NewRedirect(emits Emits, watcher Watcher, ops ...Option) *Redirect {
 	options := &options{}
 	for _, o := range ops {
 		o.apply(options)

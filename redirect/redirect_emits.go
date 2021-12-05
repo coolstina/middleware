@@ -18,20 +18,13 @@ import (
 	"sync"
 )
 
-// TriggerEvent trigger redirection event.
-type TriggerEvent struct {
-	StatusCode            int    // Http status code.
-	RedirectURI           string // redirect uri.
-	RedirectHeaderMessage string // Redirect header message,
-}
-
-// EmitTriggerEvent is a mapping configuration used to trigger eventsWithFile.
-type EmitTriggerEvent map[string]*TriggerEvent
+// Emits is a mapping configuration used to trigger events.
+type Emits map[string]*TriggerEvent
 
 var access sync.Mutex
 
 // TriggerEvent Get the trigger event for key.
-func (emit EmitTriggerEvent) TriggerEvent(key string) *TriggerEvent {
+func (emit Emits) TriggerEvent(key string) *TriggerEvent {
 	access.Lock()
 	defer access.Unlock()
 
@@ -42,7 +35,7 @@ func (emit EmitTriggerEvent) TriggerEvent(key string) *TriggerEvent {
 }
 
 // SetTriggerEvent If the triggering event already exists, it is overwritten.
-func (emit EmitTriggerEvent) SetTriggerEvent(key string, event *TriggerEvent) EmitTriggerEvent {
+func (emit Emits) SetTriggerEvent(key string, event *TriggerEvent) Emits {
 	access.Lock()
 	defer access.Unlock()
 
@@ -50,7 +43,7 @@ func (emit EmitTriggerEvent) SetTriggerEvent(key string, event *TriggerEvent) Em
 	return emit
 }
 
-func (emit EmitTriggerEvent) redirects() map[string]string {
+func (emit Emits) redirects() map[string]string {
 	var uris = make(map[string]string)
 	for _, event := range emit {
 		uris[event.RedirectURI] = event.RedirectURI
@@ -58,7 +51,7 @@ func (emit EmitTriggerEvent) redirects() map[string]string {
 	return uris
 }
 
-func (emit EmitTriggerEvent) URIIsRedirect(uri string) bool {
+func (emit Emits) URIIsRedirect(uri string) bool {
 	access.Lock()
 	defer access.Unlock()
 

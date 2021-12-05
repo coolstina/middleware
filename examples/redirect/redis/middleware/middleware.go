@@ -23,7 +23,7 @@ import (
 )
 
 func GetRedirectOr(client *redis.Client) *redirect.Redirect {
-	events := redirect.EmitTriggerEvent{
+	emits := redirect.Emits{
 		".keep.upgrading": &redirect.TriggerEvent{
 			StatusCode:            http.StatusFound,
 			RedirectURI:           "/upgrading",
@@ -31,7 +31,7 @@ func GetRedirectOr(client *redis.Client) *redirect.Redirect {
 		},
 	}
 	return redirect.NewRedirect(
-		events,
+		emits,
 		redirect.WatcherOfRedis,
 		redirect.WithWatcherOfRedisClient(client),
 		redirect.WithRedirectMessageHeader("X-Redirect-Custom-Message"),
