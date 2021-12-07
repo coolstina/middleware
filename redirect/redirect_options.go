@@ -53,7 +53,7 @@ func WithRedirectMessageHeader(header string) Option {
 	})
 }
 
-// WithSetIgnoreURI Specify redirect message HTTP response header.
+// WithSetIgnoreURI Specify redirecter ignore HTTP request.
 func WithSetIgnoreURI(uri string, ignore bool) Option {
 	setter.Lock()
 	defer setter.Unlock()
