@@ -56,7 +56,7 @@ func NewRedirect(emits Emits, watcher Watcher, ops ...Option) *Redirect {
 func (redirect *Redirect) Handler() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		uri := ctx.Request.RequestURI
-		if redirect.emits.URIIsRedirect(uri) {
+		if redirect.emits.URIIsRedirect(uri) && !redirect.options.ignore.URIIsIgnore(uri) {
 			switch redirect.watcher {
 			case WatcherOfFile:
 				for monitor, event := range redirect.emits {
