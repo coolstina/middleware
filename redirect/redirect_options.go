@@ -14,7 +14,11 @@
 
 package redirect
 
-import "github.com/go-redis/redis"
+import (
+	"sync"
+
+	"github.com/go-redis/redis"
+)
 
 // Option design modern impl.
 type Option interface {
@@ -30,7 +34,10 @@ func (of optionFunc) apply(ops *options) {
 type options struct {
 	client *redis.Client
 	header string
+	ignore Ignore
 }
+
+var setter sync.Mutex
 
 // WithWatcherOfRedisClient Specify redisclient config when watcher is redisclient.
 func WithWatcherOfRedisClient(client *redis.Client) Option {
@@ -43,5 +50,18 @@ func WithWatcherOfRedisClient(client *redis.Client) Option {
 func WithRedirectMessageHeader(header string) Option {
 	return optionFunc(func(ops *options) {
 		ops.header = header
+	})
+}
+
+// WithSetIgnoreURI Specify redirect message HTTP response header.
+func WithSetIgnoreURI(uri string, ignore bool) Option {
+	setter.Lock()
+	defer setter.Unlock()
+
+	return optionFunc(func(ops *options) {
+		if ops.ignore == nil {
+			ops.ignore = make(Ignore)
+		}
+		ops.ignore[uri] = ignore
 	})
 }
